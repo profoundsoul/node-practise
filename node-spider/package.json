@@ -9,10 +9,12 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "async": "^3.0.0",
     "crawler": "^1.2.1",
     "phantom": "^6.2.0",
     "puppeteer": "^1.16.0",
     "request": "^2.88.0",
+    "request-promise": "^4.2.4",
     "superagent": "^5.0.5"
   }
 }
