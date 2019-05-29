@@ -9,7 +9,7 @@ let config = require('../config');
 
 
 log4js.configure({
-    level: 'All',
+    level: 'debug',
     appenders: {
         out: {
             type: 'stdout'
@@ -22,7 +22,7 @@ log4js.configure({
     categories: {
         default: {
             appenders: ['spider', 'out'],
-            level: 'error'
+            level: 'debug'
         }
     }
 });
