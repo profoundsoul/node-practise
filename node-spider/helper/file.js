@@ -63,6 +63,8 @@ function writeFileSync(){
 module.exports = {
     mkdir,
     mkdirSync,
+    writeFile,
+    writeFileSync,
     appendFileSync,
     appendFile
 }

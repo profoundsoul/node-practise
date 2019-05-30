@@ -28,9 +28,10 @@ let flatCategoryArray = function (category) {
     result.items = list.filter(item => {
         item.pathname = util.getUrlPathName(item.url, flipkartConfig.siteUrl);
         return item.url && item.url.length > 1;
-    }).sort((x, y) => {
-        return x.pathname > y.pathname ? -1 : 1;
     })
+    // .sort((x, y) => {
+    //     return x.pathname > y.pathname ? -1 : 1;
+    // })
     return result;
 }
 
@@ -48,24 +49,42 @@ let getFirstEntryData = () => {
         });
 }
 
+let getSecondEntryData = async ({ url }) => {
+    url = `${flipkartConfig.siteUrl}/${url}`;
+    return await request.get(url).then(res => {
+        fileHelper.writeFileSync(`${flipkartConfig.output}/second_flipkart.html`, res.text)
+        return Promise.resolve(res)
+    })
+}
+
 let getUniqSecondLink = (categorys) => {
     var allSecondList = [];
-    for(let key in categorys){
+    for (let key in categorys) {
         allSecondList = allSecondList.concat(categorys[key].items);
     }
 
-    return _.uniqWith(allSecondList, (x, y)=>{
+    return _.uniqWith(allSecondList, (x, y) => {
         return x.pathname == y.pathname;
-    }).map(item=>item.pathname).sort();
+    }).map(item => item.pathname).sort();
 }
 
 exports.start = async () => {
     try {
-        let categorys = await getFirstEntryData();
+        let categorys = await getFirstEntryData(); 
         let linkList = getUniqSecondLink(categorys)
-
-        console.log(linkList);
-
+        // let res = await getSecondEntryData(categorys.electronics.items[1]);
+        async.eachOfSeries(categorys,async (item, key)=>{
+             await async.eachLimit(item.items, 2,async (cate, ck, cb)=>{
+                let r = await getSecondEntryData(cate.url);
+                return cb(r);
+            }, error=>{
+                console.log(error);
+                LOG.log(error);
+            })
+        }, err=>{
+            console.log(err);
+            LOG.log(err);
+        })
     } catch (err) {
         console.log(err);
         LOG.error(err)
