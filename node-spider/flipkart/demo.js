@@ -16,7 +16,7 @@ request.get(siteUrl).then(res => {
         [1, 2, 3, 4, 5]
     ];
     xlsxHelper.writeAoaToExcel({
-        fileName: 'aaaa.xlsx',
+        fileName: `${HTML_DIR}/aaaa.xlsx`,
         doubleList: ws_data
     });
 
@@ -25,10 +25,10 @@ request.get(siteUrl).then(res => {
         { S: 2, h: 3, e: 4, e_1: 5, t: 6, J: 7, S_1: 8 }
     ];
     xlsxHelper.writeJsonToExcel({
-        fileName: 'jsonExcel.xlsx',
+        fileName: `${HTML_DIR}/jsonExcel.xlsx`,
         list: list
     })
-    // fs.appendFileSync(`${HTML_DIR}/flipkart.html`, res.text);
+    fileHelper.appendFileSync(`${HTML_DIR}/flipkart.html`, res.text);
 })
 
 

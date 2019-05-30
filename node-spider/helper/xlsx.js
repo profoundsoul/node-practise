@@ -1,5 +1,5 @@
 let XLSX = require('xlsx');
-let fileUtil = require('./util')
+let fileUtil = require('./file')
 let path = require('path')
 
 // function writeAoaToExcel(fileName, doubleArr) {

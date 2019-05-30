@@ -62,8 +62,6 @@ let getUniqSecondLink = (categorys) => {
 exports.start = async () => {
     try {
         let categorys = await getFirstEntryData();
-
-
         let linkList = getUniqSecondLink(categorys)
 
         console.log(linkList);
