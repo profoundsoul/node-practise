@@ -2,7 +2,7 @@ let async = require('async')
 let cheerio = require('cheerio')
 let request = require('superagent')
 
-let util = require('../helper/util');
+let fileHelper = require('../helper/file');
 let xlsxHelper = require('../helper/xlsx')
 let db = require('../helper/db');
 
@@ -10,7 +10,7 @@ let db = require('../helper/db');
 let siteUrl = 'https://www.flipkart.com';
 const HTML_DIR = 'output/html';
 request.get(siteUrl).then(res => {
-    util.appendFileSync(`${HTML_DIR}/flipkart.html`, res.text);
+    fileHelper.appendFileSync(`${HTML_DIR}/flipkart.html`, res.text);
     var ws_data = [
         ["S", "h", "e", "e", "t", "J", "S"],
         [1, 2, 3, 4, 5]

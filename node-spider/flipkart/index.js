@@ -1,26 +1,18 @@
 let async = require('async')
 let cheerio = require('cheerio')
 let request = require('superagent')
-let { URL } = require('url')
-let util = require('../helper/util');
-let xlsxHelper = require('../helper/xlsx')
-let db = require('../helper/db');
-const config = require('../config');
-const { LOG } = require('../helper/log')
+let _ = require('lodash')
+const {
+    flipkart: flipkartConfig
+} = require('../config');
+let {
+    log: LOG,
+    util,
+    file: fileHelper,
+    xlsx: xlsxHelper,
+    db: dbHelper,
+} = require('../helper');
 
-let getUrlPath = (url) => {
-    let myURL = null;
-    try {
-        if (!url.startsWith('http')) {
-            myURL = new URL(url, config.flipkart.siteUrl);
-        } else {
-            myURL = new URL(url);
-        }
-        return myURL.pathname;
-    } catch (err) {
-        return '';
-    }
-}
 
 let flatCategoryArray = function (category) {
     var result = {
@@ -34,7 +26,7 @@ let flatCategoryArray = function (category) {
         });
     });
     result.items = list.filter(item => {
-        item.pathname = getUrlPath(item.url);
+        item.pathname = util.getUrlPathName(item.url, flipkartConfig.siteUrl);
         return item.url && item.url.length > 1;
     }).sort((x, y) => {
         return x.pathname > y.pathname ? -1 : 1;
@@ -43,31 +35,42 @@ let flatCategoryArray = function (category) {
 }
 
 let getFirstEntryData = () => {
-    let apiUrl = `${config.flipkart.siteUrl}/lc/getData?dataSourceId=websiteNavigationMenuDS_1.0`;
+    let apiUrl = `${flipkartConfig.siteUrl}/lc/getData?dataSourceId=websiteNavigationMenuDS_1.0`;
     return request.get(apiUrl)
         .type('json')
         .accept('json')
         .then(res => {
             let data = JSON.parse(res.text);
-            return Promise.resolve(config.flipkart.categorys.reduce((r, key) => {
+            return Promise.resolve(flipkartConfig.categorys.reduce((r, key) => {
                 r[key] = flatCategoryArray(data.navData[key]);
                 return r;
             }, {}));
-        }).catch(err => {
-            return Promise.reject(err);
         });
 }
 
+let getUniqSecondLink = (categorys) => {
+    var allSecondList = [];
+    for(let key in categorys){
+        allSecondList = allSecondList.concat(categorys[key].items);
+    }
+
+    return _.uniqWith(allSecondList, (x, y)=>{
+        return x.pathname == y.pathname;
+    }).map(item=>item.pathname).sort();
+}
+
+exports.start = async () => {
+    try {
+        let categorys = await getFirstEntryData();
 
 
+        let linkList = getUniqSecondLink(categorys)
 
+        console.log(linkList);
 
-exports.start = () => {
-    getFirstEntryData().then(categorys => {
-        console.log(categorys);
-    })
-        .catch(err => {
-            LOG.error(err)
-        })
+    } catch (err) {
+        console.log(err);
+        LOG.error(err)
+    }
 }
 

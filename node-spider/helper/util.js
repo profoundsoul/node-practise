@@ -1,71 +1,21 @@
-let fs = require('fs')
-let path = require('path')
-let xlxs = require('xlsx');
+let { URL } = require('url')
+let _ = require('lodash')
 
 
-function mkdirSync(dir) {
-    if (fs.existsSync(dir)) {
-        return true;
-    } else {
-        if (mkdirSync(path.dirname(dir))) {
-            fs.mkdirSync(dir)
-            return true;
-        }
-    }
-}
-
-
-function mkdir(dir, callback) {
-    fs.exists(dir, function (exists) {
-        if (exists) {
-            callback();
+exports.getUrlPathName = (url, host) => {
+    let myURL = null;
+    try {
+        if (!url.startsWith('http') && host) {
+            myURL = new URL(url, host);
         } else {
-            mkdir(path.dirname(dir), function () {
-                fs.mkdir(dir);
-            })
+            myURL = new URL(url);
         }
-    })
-}
-
-function appendFile() {
-    let args = Array.from(arguments)
-    let dir = path.dirname(args[0]);
-    mkdir(dir, () => {
-        fs.appendFile(...args)
-    });
-}
-
-function appendFileSync() {
-    let args = Array.from(arguments)
-    let dir = path.dirname(args[0]);
-    if (mkdirSync(dir)) {
-        fs.appendFileSync(...args)
+        return myURL.pathname;
+    } catch (err) {
+        return '';
     }
 }
 
-
-function writeFile(){
-    let args = Array.from(arguments)
-    let dir = path.dirname(args[0]);
-    mkdir(dir, ()=>{
-        fs.writeFile(...args)
-    })
-}
-
-function writeFileSync(){
-    let args = Array.from(arguments)
-    let dir = path.dirname(args[0]);
-    if (mkdirSync(dir)) {
-        fs.writeFileSync(...args)
-    }
-}
-
-module.exports = {
-    mkdir,
-    mkdirSync,
-    appendFileSync,
-    appendFile
-}
 
 
 
