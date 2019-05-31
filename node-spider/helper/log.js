@@ -9,7 +9,6 @@ let config = require('../config');
 
 
 log4js.configure({
-    level: 'debug',
     appenders: {
         out: {
             type: 'stdout'
